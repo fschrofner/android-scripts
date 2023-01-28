@@ -58,7 +58,7 @@
 
 (defn- add-git-tag [config metadata]
   "creates a new git tag based on the defined format and pushes it to the remote repository"
-  (let [unstaged-changes (filter #(not (str/blank? %)) (str/split-lines (:out (safe-sh "git" "status" "-s" "uno"))))
+  (let [unstaged-changes (filter #(not (str/blank? %)) (str/split-lines (:out (safe-sh "git" "status" "-s" "-uno"))))
         nr-of-changes (count unstaged-changes)]
     (if (= nr-of-changes 0)
       (let [tag-format (:format config)
