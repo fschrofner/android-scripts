@@ -26,5 +26,30 @@ allprojects {
 }
 ```
 
-Unfortunately I wasn't able to make this works with private repositories and a token. If you got that to work, I'd be happy to hear about it! It would make that solution even nicer.  
+Unfortunately I wasn't able to make this works with private repositories and a token on Github. If you got that to work, I'd be happy to hear about it! It would make that solution even nicer.  
+
+On Bitbucket you can actually use app passwords and specify them for private repositories like this:
+```groovy
+maven {
+    url 'https://api.bitbucket.org/2.0/repositories/USER/REPO/src/BRANCH/FOLDER'
+    credentials  {
+        username = bitbucketUser
+        password = bitbucketPassword
+    }
+    authentication {
+        basic(BasicAuthentication)
+    }
+}
+```
+
 Either way you can also just host it on any static webserver.
+
+### Fish
+To use the script from anywhere easily, you can create the following fish function: 
+
+```
+function gce
+    PATH_TO_SCRIPT/gce.clj $argv
+end
+funcsave gce
+```
