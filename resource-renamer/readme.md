@@ -7,7 +7,6 @@ It will reuse the file extension of the files that are already present inside th
 ./rr.clj -d "/home/schrofi/Downloads/random_asset" -n "ic_photo"
 ```
 
-## 
 ### Fish
 To more conveniently use the tool from the commandline, you can define a fish function like this:
 ```
