@@ -9,6 +9,7 @@ This file can contain multiple release configurations and needs to specify a cou
     "DEV": {
         "module": "app",
         "variant": "debug",
+        "user": "www",
         "server": "sftp://127.0.0.1",
         "path": "/var/www/apps/projects/test",
         "fileName": "Enterprise-Test",
@@ -20,6 +21,7 @@ This file can contain multiple release configurations and needs to specify a cou
     "INT": {
         "module": "app",
         "variant": "release",
+        "user": "www",
         "server": "sftp://127.0.0.1",
         "path": "/var/www/apps/projects/test",
         "fileName": "Enterprise-Test"
@@ -29,6 +31,7 @@ This file can contain multiple release configurations and needs to specify a cou
 - `module`: Specifies the module built with Gradle.
 - `variant`: The variant that should be built. It's combined with the module from above to create the proper Gradle command, e.g. `:app:assembleDebug`.
 - `server`: The server (including protocol) to upload the files to.
+- `user`: The user (which will be passed to curl) to use for the server.
 - `path`: The path on the remote server where the files should be placed.
 - `fileName`: The name to be used for the apk & json files on the remote.
 - `gitTag`: Optional object specifying the format of git tags that should be created automatically.
@@ -44,13 +47,18 @@ erp.clj
 erp.clj "INT"
 ```
 
+If you do not want to rebuild your project and just upload the currently built apk, you can use the `--skip-build` or `-s` flag to skip the build phase.
+```bash
+erp.clj --skip-build
+erp.clj -s "INT"
+```
+
 ##
 ### SSH Configuration
-I'm assuming that you've properly defined your credentials in `~/.ssh/config`, so you don't have to specify any credentials in your configuration files. You can assign specific credentials to different hosts there.
+I'm assuming that you've properly defined your credentials in `~/.ssh/config`. Unfortunately curl does not pick up the users defined inside that file, so the actual user still has to be specified inside `enterprise-releases.json`. 
 
 ```
 Host SERVER
-     User USER
      IdentityFile PATH_TO_KEY
 ```
 
@@ -59,7 +67,7 @@ If you don't want to add the script itself to your path you can also create a fi
 
 ```
 function erp
-    PATH_TO_SCRIPT/erp.clj $argv[1]
+    PATH_TO_SCRIPT/erp.clj $argv
 end
 
 funcsave erp
