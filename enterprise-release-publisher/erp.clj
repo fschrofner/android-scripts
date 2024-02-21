@@ -26,12 +26,14 @@
   "creates a os independent path string"
   (str/join fs/file-separator segments))
 
-(defn- get-output-folder [module variant]
+(defn- get-output-folder [module product-flavor build-type]
   "creates the path string of the output folder for the given module & variant"
-  (create-path-string wd module "build" "outputs" "apk" variant))
+  (->>
+   (filter #(not (nil? %)) (list wd module "build" "outputs" "apk" product-flavor build-type))
+   (apply create-path-string)))
 
-(defn- parse-generated-metadata-file [module variant]
-  (json/parse-string (slurp (create-path-string (get-output-folder module variant) metadata-file)) true))
+(defn- parse-generated-metadata-file [module product-flavor build-type]
+  (json/parse-string (slurp (create-path-string (get-output-folder module product-flavor build-type) metadata-file)) true))
 
 (defn- create-enterprise-release [module variant]
   "builds the app using the given module & variant and then returns the parsed metadata"
@@ -56,7 +58,7 @@
         user (:user info)
         path (:path info)
         file-name (:fileName info)
-        output-folder (get-output-folder (:module info) (:variant info))
+        output-folder (get-output-folder (:module info) (:productFlavor info) (:buildType info))
         output-file (create-path-string output-folder (get-in metadata [:elements 0 :outputFile]))
         remote-config (fetch-remote-config server user path file-name)
         new-version (get-in metadata [:elements 0 :versionCode])
@@ -92,10 +94,12 @@
   "builds & uploads the application based on the handed over configuration"
   (let [info (second config)
         module (:module info)
-        variant (:variant info)
+        product-flavor (:productFlavor info)
+        build-type (:buildType info)
+        variant (str product-flavor (str/capitalize build-type))
         git-tag (:gitTag info)]
     (if (not skip-build) (create-enterprise-release module variant))
-    (let [metadata (parse-generated-metadata-file module variant)]
+    (let [metadata (parse-generated-metadata-file module product-flavor build-type)]
       (upload-version config metadata)
       (if (not (nil? git-tag))
         (add-git-tag git-tag metadata)))))
