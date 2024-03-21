@@ -55,11 +55,9 @@ erp.clj -s "INT"
 
 ##
 ### SSH Configuration
-I'm assuming that you've properly defined your credentials in `~/.ssh/config`. Unfortunately curl does not pick up the users defined inside that file, so the actual user still has to be specified inside `enterprise-releases.json`. 
-
-```
-Host SERVER
-     IdentityFile PATH_TO_KEY
+You can use the `-k` option to provide an SSH key to use, if you are not using your default SSH key.
+```bash
+erp.clj -k /home/user/.ssh/enterprise
 ```
 
 ### Fish
@@ -67,7 +65,7 @@ If you don't want to add the script itself to your path you can also create a fi
 
 ```
 function erp
-    PATH_TO_SCRIPT/erp.clj $argv
+    PATH_TO_SCRIPT/erp.clj -k /home/user/.ssh/enterprise $argv
 end
 
 funcsave erp
