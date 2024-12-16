@@ -6,6 +6,9 @@
   [["-s" "--skip-build" "Skips the building process and will upload the currently built version."
     :id :skip-build
     :default false]
+   ["-n" "--no-git-tag" "Prevents the creation of a git tag, even if it was defined inside the configuration file."
+    :id :no-git-tag
+    :default false]
    ["-k" "--key SSH-KEY" "The SSH key to use to connect to the server."
     :id :ssh-key
     :parse-fn str
@@ -113,7 +116,7 @@
     (if (not skip-build) (create-enterprise-release module variant))
     (let [metadata (parse-generated-metadata-file module product-flavor build-type)]
       (upload-version config options metadata)
-      (if (not (nil? git-tag))
+      (if (and (not (:no-git-tag options)) (not (nil? git-tag)))
         (add-git-tag git-tag metadata)))))
 
 (def config (json/parse-string (slurp (create-path-string wd config-file)) true))
