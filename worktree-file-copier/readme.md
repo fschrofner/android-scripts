@@ -20,3 +20,12 @@ end
 
 funcsave cpl
 ```
+
+You could also take it one step further and use that function inside another function which initializes other things you might need:
+```fish
+# shorthand for worktree init
+function wti
+    cpl
+    git submodule update --init
+end
+```
